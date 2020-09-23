@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myvolumeclaim
+spec:
+  storageClassName: default
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      mylabel: demo2
+  template:
+    metadata:
+      labels:
+        mylabel: demo2
+    spec:
+      volumes:
+        - name: myvolume
+          persistentVolumeClaim:
+            claimName: myvolumeclaim
+      containers:
+        - name: demo
+          image: trustysquirrel.azurecr.io/demo:v1
+          volumeMounts:
+            - mountPath: "/storage"
+              name: myvolume

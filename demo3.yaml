@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo3
+  labels:
+    mylabel: demo3
+spec:
+  clusterIP: None
+  selector:
+    mylabel: demo3
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: demo3
+spec:
+  serviceName: demo3
+  replicas: 5
+  selector:
+    matchLabels:
+      mylabel: demo3
+  template:
+    metadata:
+      labels:
+        mylabel: demo3
+    spec:
+      containers:
+      - name: demo3
+        image: trustysquirrel.azurecr.io/demo:v1
+        volumeMounts:
+        - mountPath: "/storage"
+          name: myvolume
+  volumeClaimTemplates:
+  - metadata:
+      name: myvolume
+    spec:
+      storageClassName: default
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
